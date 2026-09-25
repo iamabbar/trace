@@ -9,6 +9,22 @@
       content="Analyze website performance, accessibility, best practices and SEO, then get a prioritized list of what to fix."
     />
     <title>Frontend Performance Analyzer</title>
+    <script>
+      // Runs before first paint so a dark-theme visitor never sees a light flash.
+      // Keep the storage key in sync with THEME_STORAGE_KEY in src/hooks/useTheme.ts.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('fpa-theme')
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        } catch (e) {
+          /* storage blocked — fall back to the light default */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

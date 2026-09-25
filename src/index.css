@@ -6,16 +6,130 @@
 @import '@fontsource/ibm-plex-mono/latin-ext-500.css';
 @import '@fontsource/ibm-plex-mono/latin-ext-600.css';
 
-@theme {
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Palette lives on plain custom properties rather than in @theme so the .dark
+   block below can swap it at runtime. @theme inline then points the Tailwind
+   color utilities at these, keeping the indirection out of the generated CSS. */
+:root {
+  color-scheme: light;
+
+  --fpa-grid: #e4ecf1;
+  --fpa-canvas: #f3f6f8;
+  --fpa-surface: #ffffff;
+  --fpa-subtle: #eaf0f4;
+  --fpa-border: #d9e3ea;
+  --fpa-border-strong: #c3d1dc;
+  --fpa-ink: #0b1b2b;
+  --fpa-muted: #4c5e6e;
+  --fpa-faint: #5f7282;
+  --fpa-accent: #0b6e99;
+  --fpa-accent-hover: #085a7e;
+  --fpa-accent-soft: #e1f1f8;
+  --fpa-on-accent: #ffffff;
+  --fpa-good: #1b7a45;
+  --fpa-good-soft: #e5f2ea;
+  --fpa-warn: #9a5100;
+  --fpa-warn-soft: #f9eedd;
+  --fpa-poor: #ba2f26;
+  --fpa-poor-soft: #fae8e6;
+  --fpa-track: #e2eaf0;
+  --fpa-code: #eef3f6;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --fpa-grid: #0d1e2e;
+  --fpa-canvas: #07121d;
+  --fpa-surface: #0c1b2a;
+  --fpa-subtle: #112436;
+  --fpa-border: #1c3347;
+  --fpa-border-strong: #2a4660;
+  --fpa-ink: #e3eef6;
+  --fpa-muted: #93a9bb;
+  --fpa-faint: #7f97aa;
+  --fpa-accent: #3cc8f0;
+  --fpa-accent-hover: #7ddcf6;
+  --fpa-accent-soft: #0e2d40;
+  --fpa-on-accent: #07121d;
+  --fpa-good: #56c68a;
+  --fpa-good-soft: #132a1e;
+  --fpa-warn: #e9a650;
+  --fpa-warn-soft: #2e2314;
+  --fpa-poor: #f27a70;
+  --fpa-poor-soft: #321a18;
+  --fpa-track: #15293b;
+  --fpa-code: #0a1826;
+}
+
+@theme inline {
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
     sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+
+  --color-grid: var(--fpa-grid);
+  --color-canvas: var(--fpa-canvas);
+  --color-surface: var(--fpa-surface);
+  --color-subtle: var(--fpa-subtle);
+  --color-border: var(--fpa-border);
+  --color-border-strong: var(--fpa-border-strong);
+  --color-ink: var(--fpa-ink);
+  --color-muted: var(--fpa-muted);
+  --color-faint: var(--fpa-faint);
+  --color-accent: var(--fpa-accent);
+  --color-accent-hover: var(--fpa-accent-hover);
+  --color-accent-soft: var(--fpa-accent-soft);
+  --color-on-accent: var(--fpa-on-accent);
+  --color-good: var(--fpa-good);
+  --color-good-soft: var(--fpa-good-soft);
+  --color-warn: var(--fpa-warn);
+  --color-warn-soft: var(--fpa-warn-soft);
+  --color-poor: var(--fpa-poor);
+  --color-poor-soft: var(--fpa-poor-soft);
+  --color-track: var(--fpa-track);
+  --color-code: var(--fpa-code);
+}
+
+@utility blueprint-grid {
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
