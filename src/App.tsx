@@ -33,9 +33,7 @@ export default function App() {
               <path d="M8 11.5 10.8 7" />
             </svg>
           </span>
-          <span className="font-semibold tracking-tight">
-            Frontend Performance Analyzer
-          </span>
+          <span className="font-semibold tracking-tight">trace</span>
         </div>
         <button
           type="button"

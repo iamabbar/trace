@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 export type Theme = 'light' | 'dark'
 
-export const THEME_STORAGE_KEY = 'fpa-theme'
+export const THEME_STORAGE_KEY = 'trace-theme'
 
 function readStoredTheme(): Theme | null {
   try {
