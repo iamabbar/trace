@@ -1,108 +1,229 @@
-import { useTheme } from '@/hooks/useTheme'
+import { useState } from 'react'
 
-const SWATCHES = [
-  { name: 'accent', className: 'bg-accent' },
-  { name: 'good', className: 'bg-good' },
-  { name: 'warn', className: 'bg-warn' },
-  { name: 'poor', className: 'bg-poor' },
-  { name: 'ink', className: 'bg-ink' },
-  { name: 'muted', className: 'bg-muted' },
-  { name: 'border-strong', className: 'bg-border-strong' },
-  { name: 'track', className: 'bg-track' },
-] as const
+import { Alert, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Chip } from '@/components/ui/chip'
+import { ScoreMeter } from '@/components/ui/scoreMeter'
+import { Skeleton } from '@/components/ui/skeleton'
+import { StatusBadge } from '@/components/ui/statusBadge'
+import { Tabs, TabsCount, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { TextField } from '@/components/ui/textField'
+import { ThresholdBar } from '@/components/ui/thresholdBar'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useTheme } from '@/hooks/useTheme'
+import { BAND_LABELS, BAND_TONES, scoreBand } from '@/lib/scoring'
+
+const SCORES = [82, 94, 91, 47]
+const SEVERITIES = [
+  { label: 'All', count: 6 },
+  { label: 'High', count: 2 },
+  { label: 'Medium', count: 3 },
+  { label: 'Low', count: 1 },
+]
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-4">
+        <h2 className="text-[15px] font-semibold">{title}</h2>
+        {children}
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function App() {
   const { theme, toggleTheme } = useTheme()
+  const [severity, setSeverity] = useState('All')
 
   return (
-    <div className="blueprint-grid min-h-dvh">
-      <header className="border-border bg-surface flex h-16 items-center justify-between border-b px-6">
-        <div className="flex items-center gap-2.5">
-          <span className="bg-accent text-on-accent flex size-7 items-center justify-center rounded-xs">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <path d="M2.5 11.5a5.5 5.5 0 0 1 11 0" />
-              <path d="M8 11.5 10.8 7" />
-            </svg>
-          </span>
-          <span className="font-semibold tracking-tight">trace</span>
-        </div>
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-          className="border-border-strong bg-surface text-ink hover:bg-subtle flex size-8 items-center justify-center rounded-xs border transition-colors"
-        >
-          {theme === 'dark' ? (
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <circle cx="8" cy="8" r="3" />
-              <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" />
-            </svg>
-          ) : (
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z" />
-            </svg>
-          )}
-        </button>
-      </header>
+    <TooltipProvider>
+      <div className="blueprint-grid min-h-dvh">
+        <header className="border-border bg-card flex h-16 items-center justify-between border-b px-6">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-xs">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 11.5a5.5 5.5 0 0 1 11 0" />
+                <path d="M8 11.5 10.8 7" />
+              </svg>
+            </span>
+            <span className="font-semibold tracking-tight">trace</span>
+          </div>
+          <Button
+            size="icon-sm"
+            onClick={toggleTheme}
+            aria-label={
+              theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+            }
+          >
+            {theme === 'dark' ? '☀' : '☾'}
+          </Button>
+        </header>
 
-      <main className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-16">
-        <div className="flex flex-col gap-4">
-          <p className="text-muted font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
-            Design tokens · {theme}
+        <main className="mx-auto flex max-w-5xl flex-col gap-5 px-6 py-12">
+          <p className="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
+            Component system
           </p>
-          <h1 className="text-4xl font-semibold tracking-[-0.035em] text-balance">
-            Understand what&rsquo;s slowing your website down.
-          </h1>
-          <p className="text-muted max-w-xl text-pretty">
-            Enter a URL to audit performance, accessibility, best practices and SEO — then
-            get a prioritized list of what to fix and how.
-          </p>
-        </div>
 
-        <div className="border-border bg-surface flex flex-col gap-4 rounded-md border p-6">
-          <p className="text-muted font-mono text-[11px] font-medium tracking-[0.08em] uppercase">
-            Palette
-          </p>
-          <ul className="grid grid-cols-4 gap-3 sm:grid-cols-8">
-            {SWATCHES.map((swatch) => (
-              <li key={swatch.name} className="flex flex-col gap-1.5">
-                <span
-                  className={`border-border h-10 rounded-xs border ${swatch.className}`}
-                />
-                <span className="text-muted font-mono text-[11px]">{swatch.name}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
-    </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Section title="Buttons">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="primary">Analyze website</Button>
+                <Button variant="secondary">Export</Button>
+                <Button variant="ghost">Cancel</Button>
+                <Button variant="destructive">Delete run</Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="primary" size="lg">
+                  Large 48
+                </Button>
+                <Button size="default">Medium 36</Button>
+                <Button size="sm">Small 30</Button>
+                <Button disabled>Disabled</Button>
+              </div>
+            </Section>
+
+            <Section title="Status badges">
+              <div className="flex flex-wrap gap-2">
+                <StatusBadge tone="good">Good</StatusBadge>
+                <StatusBadge tone="warn">Needs improvement</StatusBadge>
+                <StatusBadge tone="poor">Poor</StatusBadge>
+                <StatusBadge tone="info">Info</StatusBadge>
+                <StatusBadge tone="neutral">Low</StatusBadge>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Circle = good, square = needs improvement, triangle = poor — never color
+                alone.
+              </p>
+            </Section>
+
+            <Section title="Inputs">
+              <TextField
+                label="Website URL"
+                prefix="$ analyze"
+                placeholder="https://example.com"
+              />
+              <TextField
+                label="Website URL"
+                prefix="$ analyze"
+                defaultValue="htps://example"
+                error="“htps://” isn’t a valid protocol."
+              />
+            </Section>
+
+            <Section title="Score meters">
+              <ul className="flex flex-col gap-3">
+                {SCORES.map((score) => {
+                  const band = scoreBand(score)
+                  return (
+                    <li key={score} className="flex items-center gap-3">
+                      <span className="w-8 font-mono text-lg font-medium tabular-nums">
+                        {score}
+                      </span>
+                      <ScoreMeter score={score} className="grow" />
+                      <StatusBadge tone={BAND_TONES[band]}>
+                        {BAND_LABELS[band]}
+                      </StatusBadge>
+                    </li>
+                  )
+                })}
+              </ul>
+            </Section>
+
+            <Section title="Threshold bar">
+              <ThresholdBar
+                position={48}
+                goodWidth={41.6}
+                warnWidth={25}
+                goodLabel="2.5s"
+                warnLabel="4.0s"
+                annotation={{ text: '+0.4 s over', tone: 'warn' }}
+              />
+            </Section>
+
+            <Section title="Tabs & filters">
+              <Tabs defaultValue="all">
+                <TabsList>
+                  <TabsTrigger value="all">
+                    All <TabsCount>11</TabsCount>
+                  </TabsTrigger>
+                  <TabsTrigger value="js">
+                    JavaScript <TabsCount>4</TabsCount>
+                  </TabsTrigger>
+                  <TabsTrigger value="css">
+                    CSS <TabsCount>2</TabsCount>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <div className="flex flex-wrap gap-1.5">
+                {SEVERITIES.map((item) => (
+                  <Chip
+                    key={item.label}
+                    count={item.count}
+                    selected={severity === item.label}
+                    onClick={() => {
+                      setSeverity(item.label)
+                    }}
+                  >
+                    {item.label}
+                  </Chip>
+                ))}
+              </div>
+            </Section>
+
+            <Section title="Alerts">
+              <Alert tone="info">
+                <AlertTitle>Lab data only.</AlertTitle> Not enough real-visitor traffic
+                yet.
+              </Alert>
+              <Alert tone="warn">
+                <AlertTitle>Results varied 12 points</AlertTitle> across 3 runs.
+              </Alert>
+              <Alert tone="poor">
+                <AlertTitle>Accessibility audit failed.</AlertTitle> Other categories
+                completed.
+              </Alert>
+              <Alert tone="good">
+                <AlertTitle>LCP now passes.</AlertTitle> 2.1 s, down from 4.8 s.
+              </Alert>
+            </Section>
+
+            <Section title="Tooltip & skeletons">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant="ghost">
+                    About LCP
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Time until the biggest image or text block is visible. Good is 2.5 s or
+                  less.
+                </TooltipContent>
+              </Tooltip>
+              <div className="flex flex-col gap-3">
+                <Skeleton className="h-3 w-2/5" />
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-1.5" />
+              </div>
+            </Section>
+          </div>
+        </main>
+      </div>
+    </TooltipProvider>
   )
 }

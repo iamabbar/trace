@@ -37,6 +37,12 @@ export default tseslint.config(
     },
   },
   {
+    // shadcn components ship their cva variants next to the component itself.
+    // Splitting them would break `shadcn add` updates, so the rule is off here.
+    files: ['src/components/ui/**/*.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
+  {
     files: ['**/*.js'],
     extends: [js.configs.recommended, prettier],
     languageOptions: {
