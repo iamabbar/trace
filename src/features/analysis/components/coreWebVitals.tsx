@@ -20,7 +20,7 @@ function VitalCard({ vital }: { vital: WebVital }) {
             className="text-faint hover:text-foreground rounded-xs p-0.5 transition-colors"
             aria-label={`About ${vital.code}`}
           >
-            <Info className="size-4" strokeWidth={1.4} />
+            <Info aria-hidden="true" className="size-4" strokeWidth={1.4} />
           </TooltipTrigger>
           <TooltipContent>{vital.definition}</TooltipContent>
         </Tooltip>

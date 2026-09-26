@@ -92,6 +92,7 @@ export function AnalyzeForm({
           {pending ? (
             <>
               <LoaderCircle
+                aria-hidden="true"
                 className="size-4 animate-spin motion-reduce:animate-none"
                 strokeWidth={1.8}
               />

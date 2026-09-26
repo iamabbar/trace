@@ -48,6 +48,7 @@ export function AnalyzerPage() {
   if (status !== 'idle' && request) {
     return (
       <div className="flex flex-1 flex-col px-4 py-8 sm:px-6 lg:px-12">
+        <h1 className="sr-only">Analyzing {request.url}</h1>
         <div className="mx-auto w-full max-w-[1248px]">
           <AnalyzeForm
             key={request.url}

@@ -47,15 +47,15 @@ export function ReportHeader({
 
         <div className="flex flex-wrap gap-2">
           <Button disabled>
-            <GitCompare className="size-[15px]" strokeWidth={1.5} />
+            <GitCompare aria-hidden="true" className="size-[15px]" strokeWidth={1.5} />
             Compare
           </Button>
           <Button disabled>
-            <Download className="size-[15px]" strokeWidth={1.5} />
+            <Download aria-hidden="true" className="size-[15px]" strokeWidth={1.5} />
             Export
           </Button>
           <Button onClick={onRerun}>
-            <RotateCw className="size-[15px]" strokeWidth={1.5} />
+            <RotateCw aria-hidden="true" className="size-[15px]" strokeWidth={1.5} />
             Re-run
           </Button>
         </div>
@@ -63,7 +63,7 @@ export function ReportHeader({
 
       <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5">
         <span className="bg-warn-foreground text-warn flex size-10 shrink-0 items-center justify-center rounded-sm">
-          <Clock className="size-[18px]" strokeWidth={1.5} />
+          <Clock aria-hidden="true" className="size-[18px]" strokeWidth={1.5} />
         </span>
         <div className="flex grow flex-col gap-0.5">
           <p className="font-semibold">{report.verdict.headline}</p>
@@ -72,7 +72,7 @@ export function ReportHeader({
         <Button asChild className="shrink-0 self-start sm:self-auto">
           <a href="#issues">
             See what to fix first
-            <ArrowRight className="size-[14px]" strokeWidth={1.5} />
+            <ArrowRight aria-hidden="true" className="size-[14px]" strokeWidth={1.5} />
           </a>
         </Button>
       </Card>

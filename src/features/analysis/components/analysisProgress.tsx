@@ -12,7 +12,7 @@ function StepIcon({ state }: { state: StepProgress['state'] }) {
   if (state === 'done') {
     return (
       <span className="bg-good-foreground text-good flex size-5 items-center justify-center rounded-full">
-        <Check className="size-3" strokeWidth={2.4} />
+        <Check aria-hidden="true" className="size-3" strokeWidth={2.4} />
       </span>
     )
   }
@@ -20,6 +20,7 @@ function StepIcon({ state }: { state: StepProgress['state'] }) {
   if (state === 'running') {
     return (
       <LoaderCircle
+        aria-hidden="true"
         className="text-primary size-[18px] animate-spin motion-reduce:animate-none"
         strokeWidth={1.8}
       />
