@@ -1,12 +1,12 @@
 import { AppShell } from '@/components/layout/appShell'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { ComponentGalleryPage } from '@/pages/componentGalleryPage'
+import { AnalyzerPage } from '@/pages/analyzerPage'
 
 export default function App() {
   return (
     <TooltipProvider>
       <AppShell>
-        <ComponentGalleryPage />
+        <AnalyzerPage />
       </AppShell>
     </TooltipProvider>
   )

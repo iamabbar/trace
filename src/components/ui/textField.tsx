@@ -44,7 +44,7 @@ export function TextField({
   const message = error ?? hint
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn('flex min-w-0 flex-col gap-2', className)}>
       <label
         htmlFor={inputId}
         className={cn('text-[13px] font-medium', labelHidden && 'sr-only')}
@@ -52,7 +52,7 @@ export function TextField({
         {label}
       </label>
 
-      <div className={cn(fieldVariants({ size }), className)}>
+      <div className={fieldVariants({ size })}>
         {prefix ? (
           <span
             aria-hidden="true"
