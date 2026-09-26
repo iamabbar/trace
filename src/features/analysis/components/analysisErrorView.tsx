@@ -17,7 +17,7 @@ export function AnalysisErrorView({ error, onRetry, onEdit }: AnalysisErrorViewP
         We couldn’t reach{' '}
         <span className="font-mono font-medium break-all">{error.title}</span>
       </h2>
-      <p className="text-secondary mt-1.5 max-w-[620px]">
+      <p className="text-secondary mt-1.5 max-w-[760px] text-pretty">
         The server answered with{' '}
         <strong className="text-primary">{error.emphasis}</strong> {error.detail}
       </p>
