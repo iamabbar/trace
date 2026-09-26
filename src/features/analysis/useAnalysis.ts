@@ -6,7 +6,8 @@ import {
   type AnalysisError,
 } from '@/features/analysis/lib/analysisErrors'
 import { describeSteps, TOTAL_DURATION_MS } from '@/features/analysis/lib/analysisSteps'
-import type { AnalysisRequest } from '@/features/analysis/types'
+import { buildMockReport } from '@/features/analysis/mock/mockReport'
+import type { AnalysisReport, AnalysisRequest } from '@/features/analysis/types'
 
 export type AnalysisStatus = 'idle' | 'running' | 'complete' | 'error'
 
@@ -14,6 +15,7 @@ export function useAnalysis() {
   const [status, setStatus] = useState<AnalysisStatus>('idle')
   const [request, setRequest] = useState<AnalysisRequest>()
   const [error, setError] = useState<AnalysisError>()
+  const [report, setReport] = useState<AnalysisReport>()
   const [elapsedMs, setElapsedMs] = useState(0)
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export function useAnalysis() {
 
       if (next >= TOTAL_DURATION_MS) {
         setElapsedMs(TOTAL_DURATION_MS)
+        setReport(buildMockReport(request))
         setStatus('complete')
         return
       }
@@ -55,12 +58,14 @@ export function useAnalysis() {
   const start = useCallback((next: AnalysisRequest) => {
     setRequest(next)
     setError(undefined)
+    setReport(undefined)
     setElapsedMs(0)
     setStatus('running')
   }, [])
 
   const retry = useCallback(() => {
     setError(undefined)
+    setReport(undefined)
     setElapsedMs(0)
     setStatus('running')
   }, [])
@@ -79,6 +84,7 @@ export function useAnalysis() {
     status,
     request,
     error,
+    report,
     steps,
     elapsedMs,
     progress: Math.min(1, elapsedMs / TOTAL_DURATION_MS),

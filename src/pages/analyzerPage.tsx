@@ -1,8 +1,8 @@
-import { Alert, AlertTitle } from '@/components/ui/alert'
 import { AnalysisErrorCard } from '@/features/analysis/components/analysisErrorCard'
 import { AnalysisProgress } from '@/features/analysis/components/analysisProgress'
 import { AnalyzeForm } from '@/features/analysis/components/analyzeForm'
 import { ReportSkeleton } from '@/features/analysis/components/reportSkeleton'
+import { ReportView } from '@/features/analysis/components/reportView'
 import { useAnalysis } from '@/features/analysis/useAnalysis'
 
 const CATEGORIES = [
@@ -13,8 +13,37 @@ const CATEGORIES = [
 ]
 
 export function AnalyzerPage() {
-  const { status, request, error, steps, elapsedMs, progress, start, retry, reset } =
-    useAnalysis()
+  const {
+    status,
+    request,
+    error,
+    report,
+    steps,
+    elapsedMs,
+    progress,
+    start,
+    retry,
+    reset,
+  } = useAnalysis()
+
+  if (status === 'complete' && report) {
+    return (
+      <div className="flex flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-12">
+        <div className="mx-auto w-full max-w-[1248px]">
+          <AnalyzeForm
+            key={report.request.url}
+            variant="compact"
+            onSubmit={start}
+            initialUrl={report.request.url}
+            initialDevice={report.request.device}
+          />
+        </div>
+        <div className="mx-auto w-full max-w-[1248px]">
+          <ReportView report={report} onRerun={retry} />
+        </div>
+      </div>
+    )
+  }
 
   if (status !== 'idle' && request) {
     return (
@@ -51,15 +80,8 @@ export function AnalyzerPage() {
               />
             ) : status === 'error' && error ? (
               <AnalysisErrorCard error={error} onRetry={retry} onEdit={reset} />
-            ) : (
-              <Alert tone="good" className="w-full max-w-[560px]">
-                <span>
-                  <AlertTitle>Analysis complete.</AlertTitle> The report for{' '}
-                  <span className="font-mono">{request.url}</span> arrives in the next
-                  step. Edit the URL above to run another.
-                </span>
-              </Alert>
-            )}
+            ) : null}
+            type{' '}
           </div>
         </div>
       </div>
