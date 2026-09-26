@@ -1,25 +1,18 @@
-import { cn } from 'cn'
-
-export function BrandMark({ className }: { className?: string }) {
+export function BrandMark() {
   return (
-    <span
-      className={cn(
-        'bg-primary text-primary-foreground flex size-7 shrink-0 items-center justify-center rounded-xs',
-        className,
-      )}
-    >
+    <span className="bg-cyan text-on-cyan grid size-7 shrink-0 place-items-center rounded-sm">
       <svg
         width="16"
         height="16"
-        viewBox="0 0 16 16"
+        viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.7"
+        strokeWidth="2.4"
         strokeLinecap="round"
         aria-hidden="true"
       >
-        <path d="M2.5 11.5a5.5 5.5 0 0 1 11 0" />
-        <path d="M8 11.5 10.8 7" />
+        <path d="M5 17a7 7 0 0 1 14 0" />
+        <path d="M12 17l3-4" />
       </svg>
     </span>
   )

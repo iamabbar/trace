@@ -8,12 +8,12 @@ export function useTheme() {
   // The inline script in index.html already resolved the theme before paint, so
   // read it back off the DOM instead of recomputing and risking a mismatch.
   const [theme, setTheme] = useState<Theme>(() =>
-    document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+    document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark',
   )
 
   useEffect(() => {
     const root = document.documentElement
-    root.classList.toggle('dark', theme === 'dark')
+    root.setAttribute('data-theme', theme)
     root.style.colorScheme = theme
   }, [theme])
 

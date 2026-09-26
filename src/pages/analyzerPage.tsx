@@ -1,133 +1,129 @@
-import { AnalysisErrorCard } from '@/features/analysis/components/analysisErrorCard'
+import { useRef } from 'react'
+
+import { AppShell } from '@/components/layout/appShell'
+import { AnalysisErrorView } from '@/features/analysis/components/analysisErrorView'
 import { AnalysisProgress } from '@/features/analysis/components/analysisProgress'
-import { AnalyzeForm } from '@/features/analysis/components/analyzeForm'
-import { ReportSkeleton } from '@/features/analysis/components/reportSkeleton'
 import { ReportView } from '@/features/analysis/components/reportView'
+import { UrlBar } from '@/features/analysis/components/urlBar'
 import { useAnalysis } from '@/features/analysis/useAnalysis'
 
 const CATEGORIES = [
-  { name: 'Performance', description: 'Core Web Vitals, load timings, heavy resources' },
-  { name: 'Accessibility', description: 'Contrast, labels, keyboard access' },
-  { name: 'Best Practices', description: 'HTTPS, console errors, deprecated APIs' },
-  { name: 'SEO', description: 'Meta tags, crawlability, structured data' },
+  {
+    n: '01',
+    title: 'Performance',
+    body: 'Core Web Vitals, load timings, heavy resources',
+  },
+  { n: '02', title: 'Accessibility', body: 'Contrast, labels, keyboard access' },
+  { n: '03', title: 'Best Practices', body: 'HTTPS, console errors, deprecated APIs' },
+  { n: '04', title: 'SEO', body: 'Meta tags, crawlability, structured data' },
 ]
 
 export function AnalyzerPage() {
-  const {
-    status,
-    request,
-    error,
-    report,
-    steps,
-    elapsedMs,
-    progress,
-    start,
-    retry,
-    reset,
-  } = useAnalysis()
+  const { status, request, error, report, steps, progress, start, retry, reset } =
+    useAnalysis()
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  if (status === 'complete' && report) {
+  if (status === 'idle') {
     return (
-      <div className="flex flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-12">
-        <div className="mx-auto w-full max-w-[1248px]">
-          <AnalyzeForm
-            key={report.request.url}
-            variant="compact"
-            onSubmit={start}
-            initialUrl={report.request.url}
-            initialDevice={report.request.device}
-          />
-        </div>
-        <div className="mx-auto w-full max-w-[1248px]">
-          <ReportView report={report} onRerun={retry} />
-        </div>
-      </div>
-    )
-  }
-
-  if (status !== 'idle' && request) {
-    return (
-      <div className="flex flex-1 flex-col px-4 py-8 sm:px-6 lg:px-12">
-        <h1 className="sr-only">Analyzing {request.url}</h1>
-        <div className="mx-auto w-full max-w-[1248px]">
-          <AnalyzeForm
-            key={request.url}
-            variant="compact"
-            onSubmit={start}
-            pending={status === 'running'}
-            initialUrl={request.url}
-            initialDevice={request.device}
-          />
-        </div>
-
-        <div className="relative mt-8 flex-1">
-          <div className="mx-auto w-full max-w-[1248px]">
-            <ReportSkeleton />
-          </div>
-
+      <AppShell onHome={reset}>
+        <section aria-labelledby="hero-title" className="relative flex-1 overflow-hidden">
+          <div aria-hidden="true" className="ledger-grid absolute inset-0" />
           <div
-            aria-hidden="true"
-            className="from-background/20 to-background/95 absolute inset-0 bg-gradient-to-b from-0% to-40%"
-          />
+            id="main"
+            className="relative mx-auto max-w-[1200px] px-[clamp(16px,4vw,32px)] pt-[clamp(64px,11vw,128px)] pb-18"
+          >
+            <h1
+              id="hero-title"
+              className="max-w-[900px] text-[clamp(40px,6.6vw,76px)] leading-[1.02] font-extrabold tracking-[-0.045em] text-balance"
+            >
+              Understand what’s <span className="text-cyan">slowing</span> your website
+              down.
+            </h1>
+            <p className="text-secondary mt-5.5 max-w-[600px] text-[clamp(16px,1.7vw,18px)] leading-relaxed text-pretty">
+              Enter a URL to audit performance, accessibility, best practices and SEO,
+              then get a prioritized list of what to fix and how.
+            </p>
 
-          <div className="absolute inset-x-0 top-6 flex justify-center sm:top-10">
-            {status === 'running' ? (
-              <AnalysisProgress
-                request={request}
-                steps={steps}
-                elapsedMs={elapsedMs}
-                progress={progress}
-                onCancel={reset}
+            <div className="mt-10">
+              <UrlBar
+                onSubmit={start}
+                initialUrl={request?.url ?? ''}
+                initialDevice={request?.device}
               />
-            ) : status === 'error' && error ? (
-              <AnalysisErrorCard error={error} onRetry={retry} onEdit={reset} />
-            ) : null}
-            type{' '}
+            </div>
+
+            <ul className="border-low mt-22 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] border-t">
+              {CATEGORIES.map((category) => (
+                <li key={category.n} className="flex flex-col gap-1 pt-6 pr-6">
+                  <span className="text-tertiary text-xs font-semibold tracking-[0.08em]">
+                    {category.n}
+                  </span>
+                  <span className="text-[15px] font-bold">{category.title}</span>
+                  <span className="text-secondary text-[13px] text-pretty">
+                    {category.body}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </div>
+        </section>
+      </AppShell>
     )
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col items-center px-4 py-10 sm:px-6 sm:py-12">
-      {/* Auto margins split the leftover height above and below, which centres the
-          hero and drops the category strip to the bottom of the viewport. */}
-      <div className="mt-auto flex max-w-[760px] flex-col items-center gap-5 text-center">
-        <h1 className="text-[34px] leading-[1.05] font-semibold tracking-[-0.035em] text-balance sm:text-5xl lg:text-[56px]">
-          Understand what&rsquo;s slowing your website down.
-        </h1>
-        <p className="text-muted-foreground max-w-[580px] text-base text-pretty sm:text-[17px]">
-          Enter a URL to audit performance, accessibility, best practices and SEO — then
-          get a prioritized list of what to fix and how.
-        </p>
-      </div>
+    <AppShell onHome={reset}>
+      <main
+        id="main"
+        className="mx-auto w-full max-w-[1200px] flex-1 px-[clamp(16px,4vw,32px)] pt-8 pb-24"
+      >
+        {/* The loading, error and report views all start their headings at h2,
+            so the page needs an h1 to keep the order intact. */}
+        <h1 className="sr-only">Analysis for {request?.url}</h1>
 
-      <div className="mt-14 w-full sm:mt-16">
-        <AnalyzeForm
+        {/* A live region on <main> would re-announce the entire report — every
+            score, issue and table row — the moment it renders. Only the outcome
+            is announced here; the progress card announces its own steps. */}
+        <p role="status" aria-live="polite" className="sr-only">
+          {status === 'complete'
+            ? 'Analysis complete. Report ready.'
+            : status === 'error'
+              ? 'Analysis failed.'
+              : ''}
+        </p>
+        <UrlBar
+          key={request?.url}
+          variant="compact"
           onSubmit={start}
+          pending={status === 'running'}
           initialUrl={request?.url ?? ''}
           initialDevice={request?.device}
+          inputRef={inputRef}
         />
-      </div>
 
-      <ul className="border-border mt-auto grid w-full grid-cols-2 gap-x-5 gap-y-6 border-t pt-5 lg:grid-cols-4 lg:gap-x-0">
-        {CATEGORIES.map((category, index) => (
-          <li
-            key={category.name}
-            className={
-              index === 0
-                ? 'flex flex-col gap-1 lg:pr-5'
-                : 'border-border flex flex-col gap-1 lg:border-l lg:px-5 lg:last:pr-0'
-            }
-          >
-            <span className="text-sm font-semibold">{category.name}</span>
-            <span className="text-muted-foreground text-[13px] text-pretty">
-              {category.description}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
+        {status === 'running' && request ? (
+          <AnalysisProgress
+            request={request}
+            runNumber={15}
+            steps={steps}
+            progress={progress}
+          />
+        ) : null}
+
+        {status === 'error' && error ? (
+          <AnalysisErrorView
+            error={error}
+            onRetry={retry}
+            onEdit={() => {
+              inputRef.current?.focus()
+            }}
+          />
+        ) : null}
+
+        {status === 'complete' && report ? (
+          <ReportView report={report} onRerun={retry} />
+        ) : null}
+      </main>
+    </AppShell>
   )
 }

@@ -1,64 +1,103 @@
-import { Info } from 'lucide-react'
-
-import { Card } from '@/components/ui/card'
-import { StatusBadge } from '@/components/ui/statusBadge'
-import { ThresholdBar } from '@/components/ui/thresholdBar'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { StatusMark, toneColor } from '@/components/ui/statusMark'
+import { LedgerSection } from '@/features/analysis/components/ledgerSection'
 import type { WebVital } from '@/features/analysis/types'
-import { BAND_LABELS, BAND_TONES } from '@/lib/scoring'
 
-function VitalCard({ vital }: { vital: WebVital }) {
+function ThresholdTrack({ vital }: { vital: WebVital }) {
+  const marker = `${String(vital.markerPercent)}%`
+
   return (
-    <Card className="flex flex-col gap-4.5 p-6">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-col gap-0.5">
-          <span className="font-mono text-[13px] font-semibold">{vital.code}</span>
-          <span className="text-muted-foreground text-[13px]">{vital.name}</span>
-        </div>
-        <Tooltip>
-          <TooltipTrigger
-            className="text-faint hover:text-foreground rounded-xs p-0.5 transition-colors"
-            aria-label={`About ${vital.code}`}
-          >
-            <Info aria-hidden="true" className="size-4" strokeWidth={1.4} />
-          </TooltipTrigger>
-          <TooltipContent>{vital.definition}</TooltipContent>
-        </Tooltip>
+    <div aria-hidden="true" className="relative h-16 self-center">
+      <span
+        className="absolute top-0 -translate-x-1/2 text-xs font-semibold whitespace-nowrap"
+        style={{ left: marker, color: toneColor(vital.tone) }}
+      >
+        {vital.delta}
+      </span>
+
+      <div className="absolute inset-x-0 top-7 flex h-1 gap-[3px]">
+        <span
+          className="bg-success rounded-[2px] opacity-35"
+          style={{ flex: vital.goodFlex }}
+        />
+        <span
+          className="bg-warning rounded-[2px] opacity-35"
+          style={{ flex: vital.warnFlex }}
+        />
+        <span
+          className="bg-error rounded-[2px] opacity-35"
+          style={{ flex: vital.poorFlex }}
+        />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="font-mono text-4xl leading-none font-medium tracking-[-0.03em] tabular-nums">
-          {vital.value}
-          {vital.unit ? (
-            <span className="text-muted-foreground text-xl">{vital.unit}</span>
-          ) : null}
-        </span>
-        <StatusBadge tone={BAND_TONES[vital.band]}>{BAND_LABELS[vital.band]}</StatusBadge>
-      </div>
-
-      <ThresholdBar
-        position={vital.position}
-        goodWidth={vital.goodWidth}
-        warnWidth={vital.warnWidth}
-        goodLabel={vital.goodLabel}
-        warnLabel={vital.warnLabel}
-        annotation={{ text: vital.annotation, tone: vital.band }}
-        className="mt-2"
+      <span
+        className="bg-primary absolute top-[22px] -ml-[1.5px] h-4 w-[3px] rounded-[2px]"
+        style={{ left: marker }}
       />
 
-      <p className="border-border text-muted-foreground border-t pt-3.5 text-pretty">
-        {vital.explanation}
-      </p>
-    </Card>
+      <span
+        className="text-tertiary absolute top-11 -translate-x-1/2 text-[11px] tabular-nums"
+        style={{ left: `${String(vital.label1Percent)}%` }}
+      >
+        {vital.label1}
+      </span>
+      <span
+        className="text-tertiary absolute top-11 -translate-x-1/2 text-[11px] tabular-nums"
+        style={{ left: `${String(vital.label2Percent)}%` }}
+      >
+        {vital.label2}
+      </span>
+    </div>
   )
 }
 
 export function CoreWebVitals({ vitals }: { vitals: WebVital[] }) {
+  const passing = vitals.filter((vital) => vital.tone === 'good').length
+
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      {vitals.map((vital) => (
-        <VitalCard key={vital.code} vital={vital} />
+    <LedgerSection
+      index="01"
+      title="Core Web Vitals"
+      subtitle="How real visitors experience loading, responsiveness and visual stability. Google uses these for search ranking."
+      note={
+        <p
+          className="mt-2.5 text-[13px] font-semibold"
+          style={{ color: toneColor(passing === vitals.length ? 'good' : 'warn') }}
+        >
+          {passing} of {vitals.length} passing
+        </p>
+      }
+    >
+      {vitals.map((vital, index) => (
+        <div
+          key={vital.key}
+          className={
+            index === 0
+              ? 'border-low grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-10 gap-y-4 border-t py-6'
+              : 'hairline-faint grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-10 gap-y-4 border-t py-6'
+          }
+        >
+          <div className="flex min-w-0 flex-col gap-2">
+            <span>
+              <strong className="font-bold">{vital.key}</strong>{' '}
+              <span className="text-secondary text-[13px]">{vital.full}</span>
+            </span>
+            <span className="flex flex-wrap items-baseline gap-3">
+              <span className="text-[30px] leading-[1.1] font-extrabold tracking-[-0.03em] tabular-nums">
+                {vital.value}
+                {vital.unit ? (
+                  <span className="text-secondary text-base font-semibold">
+                    {vital.unit}
+                  </span>
+                ) : null}
+              </span>
+              <StatusMark tone={vital.tone}>{vital.status}</StatusMark>
+            </span>
+            <p className="text-secondary text-[13px] text-pretty">{vital.description}</p>
+          </div>
+
+          <ThresholdTrack vital={vital} />
+        </div>
       ))}
-    </div>
+    </LedgerSection>
   )
 }

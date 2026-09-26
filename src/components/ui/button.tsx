@@ -1,32 +1,25 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from 'cn'
-import { Slot } from 'radix-ui'
 import type * as React from 'react'
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-sm border border-transparent text-sm font-medium whitespace-nowrap transition-colors select-none disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md font-semibold whitespace-nowrap transition-[background,filter] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        // Mono on the primary action only — it stands in for the terminal command.
-        primary: 'bg-primary text-primary-foreground hover:bg-primary-hover font-mono',
-        secondary: 'bg-card text-foreground border-border-strong hover:bg-muted',
-        ghost: 'text-muted-foreground hover:bg-muted hover:text-foreground',
-        destructive:
-          'bg-card text-destructive border-border-strong hover:bg-destructive-foreground',
+        primary: 'bg-cyan text-on-cyan font-bold hover:brightness-110',
+        outline: 'border-stroke text-primary hover:bg-tag border',
+        ghost: 'text-secondary hover:bg-tag hover:text-primary',
       },
       size: {
-        sm: 'h-[30px] rounded-xs px-2.5 text-[13px]',
-        default: 'h-9 px-3.5',
-        lg: 'h-12 px-5 text-[15px]',
+        sm: 'h-8 px-3 text-[13px]',
+        default: 'h-9 px-3.5 text-[13px]',
+        lg: 'h-10 px-4.5',
+        xl: 'h-13 px-6 text-[15px]',
         icon: 'size-9',
-        'icon-sm': 'size-[30px] rounded-xs',
       },
     },
-    defaultVariants: {
-      variant: 'secondary',
-      size: 'default',
-    },
+    defaultVariants: { variant: 'outline', size: 'default' },
   },
 )
 
@@ -34,16 +27,10 @@ function Button({
   className,
   variant,
   size,
-  asChild = false,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot.Root : 'button'
-
+}: React.ComponentProps<'button'> & VariantProps<typeof buttonVariants>) {
   return (
-    <Comp
+    <button
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
@@ -51,4 +38,19 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+function ButtonLink({
+  className,
+  variant,
+  size,
+  ...props
+}: React.ComponentProps<'a'> & VariantProps<typeof buttonVariants>) {
+  return (
+    <a
+      data-slot="button-link"
+      className={cn(buttonVariants({ variant, size, className }), 'no-underline')}
+      {...props}
+    />
+  )
+}
+
+export { Button, ButtonLink, buttonVariants }

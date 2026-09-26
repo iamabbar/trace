@@ -1,39 +1,40 @@
+import { GitBranch } from 'lucide-react'
+
 import { BrandMark } from '@/components/layout/brandMark'
 import { ThemeToggle } from '@/components/layout/themeToggle'
-import { Button } from '@/components/ui/button'
+import { ButtonLink } from '@/components/ui/button'
 
 const REPOSITORY_URL = 'https://github.com/iamabbar/trace'
 
-export function AppHeader() {
+export function AppHeader({ onHome }: { onHome: () => void }) {
   return (
-    <header className="border-border bg-card sticky top-0 z-40 flex h-14 items-center justify-between gap-4 border-b px-4 sm:h-16 sm:px-6 lg:px-12">
-      <a href="/" className="flex items-center gap-2.5 text-inherit no-underline">
-        <BrandMark />
-        <span className="font-semibold tracking-tight">trace</span>
-      </a>
+    <header className="border-low bg-body sticky top-0 z-20 border-b">
+      <div className="mx-auto flex h-15 max-w-[1200px] items-center justify-between gap-4 px-[clamp(16px,4vw,32px)]">
+        <a
+          href="#"
+          onClick={(event) => {
+            event.preventDefault()
+            onHome()
+          }}
+          aria-label="trace home"
+          className="text-primary flex items-center gap-2.5 no-underline"
+        >
+          <BrandMark />
+          <span className="text-base font-bold tracking-[-0.01em]">trace</span>
+        </a>
 
-      <div className="flex items-center gap-2">
-        <Button asChild size="sm" className="hidden sm:inline-flex">
-          <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <circle cx="5" cy="3.5" r="1.5" />
-              <circle cx="5" cy="12.5" r="1.5" />
-              <circle cx="11" cy="4.5" r="1.5" />
-              <path d="M5 5v6M11 6c0 3-6 2-6 5" />
-            </svg>
+        <nav aria-label="Utility" className="flex items-center gap-2">
+          <ButtonLink
+            href={REPOSITORY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="px-3 font-semibold"
+          >
+            <GitBranch aria-hidden="true" className="size-4" strokeWidth={1.8} />
             GitHub
-          </a>
-        </Button>
-        <ThemeToggle />
+          </ButtonLink>
+          <ThemeToggle />
+        </nav>
       </div>
     </header>
   )

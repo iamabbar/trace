@@ -2,10 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   buildAnalysisError,
-  mockErrorFor,
+  shouldFail,
   type AnalysisError,
 } from '@/features/analysis/lib/analysisErrors'
 import { describeSteps, TOTAL_DURATION_MS } from '@/features/analysis/lib/analysisSteps'
+import { hostOf } from '@/features/analysis/lib/urlInput'
 import { buildMockReport } from '@/features/analysis/mock/mockReport'
 import type { AnalysisReport, AnalysisRequest } from '@/features/analysis/types'
 
@@ -22,32 +23,25 @@ export function useAnalysis() {
     if (status !== 'running' || !request) return
 
     // Derive elapsed from a single start stamp rather than accumulating ticks,
-    // so a throttled background tab cannot drift the timings.
+    // so a throttled background tab cannot drift the step timings.
     const startedAt = performance.now()
-    const failWith = mockErrorFor(request.url)
-
-    // Failures surface part-way through rather than at the end, which is where
-    // a refused connection or a bot challenge would actually show up.
-    const failAt = TOTAL_DURATION_MS * 0.55
+    const willFail = shouldFail(request.url)
 
     const timer = window.setInterval(() => {
       const next = performance.now() - startedAt
-
-      if (failWith && next >= failAt) {
-        setElapsedMs(failAt)
-        setError(buildAnalysisError(failWith, request.url))
-        setStatus('error')
+      if (next < TOTAL_DURATION_MS) {
+        setElapsedMs(next)
         return
       }
 
-      if (next >= TOTAL_DURATION_MS) {
-        setElapsedMs(TOTAL_DURATION_MS)
+      setElapsedMs(TOTAL_DURATION_MS)
+      if (willFail) {
+        setError(buildAnalysisError(hostOf(request.url)))
+        setStatus('error')
+      } else {
         setReport(buildMockReport(request))
         setStatus('complete')
-        return
       }
-
-      setElapsedMs(next)
     }, 100)
 
     return () => {
@@ -70,8 +64,7 @@ export function useAnalysis() {
     setStatus('running')
   }, [])
 
-  // Keeps the request so a cancelled run returns to a form that still holds the
-  // URL the user typed.
+  // Keeps the request so returning to the form still holds the URL that was run.
   const reset = useCallback(() => {
     setStatus('idle')
     setError(undefined)
@@ -86,7 +79,6 @@ export function useAnalysis() {
     error,
     report,
     steps,
-    elapsedMs,
     progress: Math.min(1, elapsedMs / TOTAL_DURATION_MS),
     start,
     retry,

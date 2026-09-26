@@ -50,3 +50,12 @@ export function checkUrl(raw: string): UrlCheck {
 
   return { status: 'valid', url: parsed.toString() }
 }
+
+export function hostOf(url: string) {
+  try {
+    const parsed = new URL(url)
+    return `${parsed.hostname}${parsed.pathname}`
+  } catch {
+    return url
+  }
+}

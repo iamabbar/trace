@@ -10,19 +10,19 @@
     />
     <title>trace</title>
     <script>
-      // Runs before first paint so a dark-theme visitor never sees a light flash.
+      // Runs before first paint so the theme never flashes. Dark is the default.
       // Keep the storage key in sync with THEME_STORAGE_KEY in src/hooks/useTheme.ts.
       ;(function () {
+        var theme = 'dark'
         try {
           var stored = localStorage.getItem('trace-theme')
-          var dark =
-            stored === 'dark' ||
-            (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.classList.toggle('dark', dark)
-          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+          if (stored === 'light' || stored === 'dark') theme = stored
+          else if (matchMedia('(prefers-color-scheme: light)').matches) theme = 'light'
         } catch (e) {
-          /* storage blocked — fall back to the light default */
+          /* storage blocked — fall back to dark */
         }
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.style.colorScheme = theme
       })()
     </script>
   </head>

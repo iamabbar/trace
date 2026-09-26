@@ -1,122 +1,96 @@
-import { Ban, Code, HardDrive, Image } from 'lucide-react'
-import { useState } from 'react'
+import { Code, Image, Server, Slash } from 'lucide-react'
+import { useId, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Chip } from '@/components/ui/chip'
-import { StatusBadge, type StatusTone } from '@/components/ui/statusBadge'
+import { StatusMark, type StatusTone } from '@/components/ui/statusMark'
+import { tabPanelProps, UnderlineTabs } from '@/components/ui/underlineTabs'
+import { LedgerSection } from '@/features/analysis/components/ledgerSection'
 import type { Issue, IssueSeverity } from '@/features/analysis/types'
 
-const ICONS = { image: Image, code: Code, blocking: Ban, server: HardDrive } as const
-
-const SEVERITY_LABELS: Record<IssueSeverity, string> = {
-  high: 'High',
-  medium: 'Medium',
-  low: 'Low',
-}
+const ICONS = { image: Image, slash: Slash, code: Code, server: Server } as const
 
 const SEVERITY_TONES: Record<IssueSeverity, StatusTone> = {
-  high: 'poor',
-  medium: 'warn',
-  low: 'neutral',
+  High: 'poor',
+  Medium: 'warn',
+  Low: 'low',
 }
 
-const FILTERS = ['all', 'high', 'medium', 'low'] as const
+const FILTERS = ['All', 'High', 'Medium', 'Low'] as const
 type Filter = (typeof FILTERS)[number]
 
-function IssueRow({ issue, isLast }: { issue: Issue; isLast: boolean }) {
-  const Icon = ICONS[issue.icon]
-
-  return (
-    <li
-      className={
-        isLast
-          ? 'grid grid-cols-[40px_minmax(0,1fr)] gap-4 p-5 sm:gap-5 lg:grid-cols-[40px_minmax(0,1fr)_170px_auto]'
-          : 'border-border grid grid-cols-[40px_minmax(0,1fr)] gap-4 border-b p-5 sm:gap-5 lg:grid-cols-[40px_minmax(0,1fr)_170px_auto]'
-      }
-    >
-      <span className="border-border bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-sm border">
-        <Icon className="size-[18px]" strokeWidth={1.4} />
-      </span>
-
-      <div className="flex min-w-0 flex-col gap-1.5">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <h3 className="font-semibold">{issue.title}</h3>
-          <StatusBadge tone={SEVERITY_TONES[issue.severity]}>
-            {SEVERITY_LABELS[issue.severity]}
-          </StatusBadge>
-        </div>
-        <code className="border-border bg-code self-start rounded-xs border px-1.5 font-mono text-[12.5px] break-all">
-          {issue.target}
-        </code>
-        <p className="text-muted-foreground max-w-[640px] text-pretty">
-          {issue.description}
-        </p>
-      </div>
-
-      <div className="col-start-2 flex flex-col gap-0.5 lg:col-start-3">
-        <span className="text-muted-foreground text-xs">Est. savings</span>
-        <span className="font-mono text-sm font-medium tabular-nums">
-          {issue.savings}
-        </span>
-      </div>
-
-      <div className="col-start-2 lg:col-start-4 lg:justify-self-end">
-        <Button size="sm" disabled>
-          View details
-        </Button>
-      </div>
-    </li>
-  )
-}
-
 export function IssueList({ issues }: { issues: Issue[] }) {
-  const [filter, setFilter] = useState<Filter>('all')
-  const visible = issues.filter((issue) => filter === 'all' || issue.severity === filter)
+  const tabsId = useId()
+  const [filter, setFilter] = useState<Filter>('All')
+  const visible = issues.filter((issue) => filter === 'All' || issue.severity === filter)
 
   return (
-    <div className="flex flex-col gap-4">
-      <div
-        className="flex flex-wrap gap-1.5"
-        role="group"
-        aria-label="Filter by severity"
-      >
-        {FILTERS.map((id) => (
-          <Chip
-            key={id}
-            selected={filter === id}
-            count={
-              id === 'all'
-                ? issues.length
-                : issues.filter((issue) => issue.severity === id).length
-            }
-            onClick={() => {
-              setFilter(id)
-            }}
-          >
-            {id === 'all' ? 'All' : SEVERITY_LABELS[id]}
-          </Chip>
-        ))}
-      </div>
+    <LedgerSection
+      id="issues"
+      index="03"
+      title="Issues"
+      subtitle="Sorted by estimated impact. Start at the top."
+    >
+      <UnderlineTabs
+        id={tabsId}
+        label="Filter by severity"
+        value={filter}
+        onChange={setFilter}
+        className="mb-2"
+        tabs={FILTERS.map((id) => ({
+          value: id,
+          label: id,
+          count:
+            id === 'All'
+              ? issues.length
+              : issues.filter((issue) => issue.severity === id).length,
+        }))}
+      />
 
-      {visible.length === 0 ? (
-        <Card className="text-muted-foreground p-6 text-center text-[13px]">
-          No {SEVERITY_LABELS[filter as IssueSeverity].toLowerCase()}-severity issues.
-          Nothing to fix in this filter — try “All”.
-        </Card>
-      ) : (
-        <Card className="overflow-hidden">
-          <ul className="flex flex-col">
-            {visible.map((issue, index) => (
-              <IssueRow
-                key={issue.id}
-                issue={issue}
-                isLast={index === visible.length - 1}
-              />
-            ))}
-          </ul>
-        </Card>
-      )}
-    </div>
+      <ul {...tabPanelProps(tabsId, filter)}>
+        {visible.map((issue) => {
+          const Icon = ICONS[issue.icon]
+
+          return (
+            <li
+              key={issue.id}
+              className="hairline-faint grid grid-cols-[20px_minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3.5 border-t py-5"
+            >
+              <span className="text-tertiary mt-0.5">
+                <Icon aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
+              </span>
+
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <span className="text-[15px] font-bold">{issue.title}</span>
+                  <StatusMark tone={SEVERITY_TONES[issue.severity]} size={7}>
+                    {issue.severity}
+                  </StatusMark>
+                </span>
+                <code className="bg-tag rounded-chip max-w-full self-start overflow-hidden px-2 py-0.5 font-mono text-xs text-ellipsis whitespace-nowrap">
+                  {issue.file}
+                </code>
+                <p className="text-secondary max-w-[640px] text-pretty">
+                  {issue.description}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-end gap-2 text-right">
+                <span className="text-tertiary text-[11px]">Est. savings</span>
+                <span className="-mt-2 font-bold whitespace-nowrap tabular-nums">
+                  {issue.savings}
+                </span>
+                {issue.recommendationId ? (
+                  <a
+                    href={`#${issue.recommendationId}`}
+                    className="text-xs font-semibold whitespace-nowrap"
+                  >
+                    View fix
+                  </a>
+                ) : null}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </LedgerSection>
   )
 }

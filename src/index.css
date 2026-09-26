@@ -1,182 +1,100 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
-@import '@fontsource/ibm-plex-mono/latin-400.css';
-@import '@fontsource/ibm-plex-mono/latin-500.css';
-@import '@fontsource/ibm-plex-mono/latin-600.css';
-@import '@fontsource/ibm-plex-mono/latin-ext-400.css';
-@import '@fontsource/ibm-plex-mono/latin-ext-500.css';
-@import '@fontsource/ibm-plex-mono/latin-ext-600.css';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/jetbrains-mono';
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-/* One vocabulary: shadcn's token names carrying the blueprint design's colors.
-   Values live on plain custom properties rather than in @theme so the .dark
-   block can swap them at runtime; @theme inline below points the Tailwind
-   utilities straight at these. */
-:root {
-  color-scheme: light;
-
-  --background: #f3f6f8;
-  --foreground: #0b1b2b;
-  --card: #ffffff;
-  --card-foreground: #0b1b2b;
-  --popover: #0b1b2b;
-  --popover-foreground: #f3f6f8;
-  --primary: #0b6e99;
-  --primary-hover: #085a7e;
-  --primary-foreground: #ffffff;
-  --secondary: #ffffff;
-  --secondary-foreground: #0b1b2b;
-  --muted: #eaf0f4;
-  --muted-foreground: #4c5e6e;
-  --accent: #e1f1f8;
-  --accent-foreground: #0b6e99;
-  --destructive: #ba2f26;
-  --destructive-foreground: #fae8e6;
-  --border: #d9e3ea;
-  --border-strong: #c3d1dc;
-  --input: #c3d1dc;
-  --ring: #0b6e99;
-
-  --faint: #5f7282;
-  --grid: #e4ecf1;
-  --track: #e2eaf0;
-  --code: #eef3f6;
-  --good: #1b7a45;
-  --good-foreground: #e5f2ea;
-  --warn: #9a5100;
-  --warn-foreground: #f9eedd;
-
-  --radius: 3px;
-}
-
-.dark {
+/* Values live on plain custom properties so the light block can swap them at
+   runtime; @theme inline points the Tailwind utilities straight at these.
+   Dark is the default — the design is dark-first. */
+:root,
+:root[data-theme='dark'] {
   color-scheme: dark;
 
-  --background: #07121d;
-  --foreground: #e3eef6;
-  --card: #0c1b2a;
-  --card-foreground: #e3eef6;
-  --popover: #e3eef6;
-  --popover-foreground: #07121d;
-  --primary: #3cc8f0;
-  --primary-hover: #7ddcf6;
-  --primary-foreground: #07121d;
-  --secondary: #0c1b2a;
-  --secondary-foreground: #e3eef6;
-  --muted: #112436;
-  --muted-foreground: #93a9bb;
-  --accent: #0e2d40;
-  --accent-foreground: #3cc8f0;
-  --destructive: #f27a70;
-  --destructive-foreground: #321a18;
-  --border: #1c3347;
-  --border-strong: #2a4660;
-  --input: #2a4660;
-  --ring: #3cc8f0;
+  --body: rgb(1, 12, 20);
+  --text-primary: rgb(250, 251, 255);
+  --text-secondary: rgb(203, 213, 225);
+  --text-tertiary: rgb(148, 163, 184);
+  --border-low: rgba(204, 210, 218, 0.1);
+  --stroke-default: rgba(255, 255, 255, 0.14);
+  --tag: rgba(255, 255, 255, 0.05);
+  --tag-hover: rgba(255, 255, 255, 0.1);
+  --cyan: rgb(73, 204, 249);
+  --on-cyan: #021016;
+  --success: rgb(0, 213, 111);
+  --warning: rgb(255, 148, 76);
+  --error: rgb(255, 72, 94);
+  --accent-lilac: rgb(201, 136, 242);
+  --accent-violet: rgb(151, 76, 255);
+  --accent-salmon: rgb(255, 122, 122);
+}
 
-  --faint: #7f97aa;
-  --grid: #0d1e2e;
-  --track: #15293b;
-  --code: #0a1826;
-  --good: #56c68a;
-  --good-foreground: #132a1e;
-  --warn: #e9a650;
-  --warn-foreground: #2e2314;
+/* The Figma export's light mode never overrides the slate primitives, so text
+   would stay near-white on a light ground. These are the design's own runtime
+   light values. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --body: rgb(247, 247, 249);
+  --text-primary: rgb(0, 13, 28);
+  --text-secondary: rgba(0, 13, 28, 0.68);
+  --text-tertiary: rgba(0, 13, 28, 0.5);
+  --border-low: rgba(0, 13, 28, 0.1);
+  --stroke-default: rgba(0, 13, 28, 0.14);
+  --tag: rgba(0, 13, 28, 0.04);
+  --tag-hover: rgba(0, 13, 28, 0.08);
+  --cyan: rgb(0, 134, 184);
+  --on-cyan: #ffffff;
+  --success: rgb(0, 150, 72);
+  --warning: rgb(196, 98, 20);
+  --error: rgb(206, 36, 60);
 }
 
 @theme inline {
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-    sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  --font-heading: var(--font-sans);
+  --font-sans: 'Plus Jakarta Sans Variable', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --radius-xs: 2px;
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
+  --radius-chip: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-border-strong: var(--border-strong);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --color-faint: var(--faint);
-  --color-grid: var(--grid);
-  --color-track: var(--track);
-  --color-code: var(--code);
-  --color-good: var(--good);
-  --color-good-foreground: var(--good-foreground);
-  --color-warn: var(--warn);
-  --color-warn-foreground: var(--warn-foreground);
+  --color-body: var(--body);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-low: var(--border-low);
+  --color-stroke: var(--stroke-default);
+  --color-tag: var(--tag);
+  --color-tag-hover: var(--tag-hover);
+  --color-cyan: var(--cyan);
+  --color-on-cyan: var(--on-cyan);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-lilac: var(--accent-lilac);
+  --color-violet: var(--accent-violet);
+  --color-salmon: var(--accent-salmon);
 }
 
-@utility blueprint-grid {
+/* Rows inside a section are separated by a fainter hairline than the sections
+   themselves. */
+@utility hairline-faint {
+  border-color: color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+@utility ledger-grid {
   background-image:
-    linear-gradient(var(--color-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: -1px -1px;
-}
-
-/* Eight gradient segments drawing the blueprint tick marks at each corner. */
-@utility crosshair-corners {
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(var(--primary), var(--primary)) 0 0 / 10px 2px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 0 0 / 2px 10px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 100% 0 / 10px 2px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 100% 0 / 2px 10px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 0 100% / 10px 2px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 0 100% / 2px 10px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 100% 100% / 10px 2px no-repeat,
-      linear-gradient(var(--primary), var(--primary)) 100% 100% / 2px 10px no-repeat;
-  }
-}
-
-@utility skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--muted) 0%,
-    var(--track) 50%,
-    var(--muted) 100%
+    linear-gradient(var(--border-low) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-low) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 70% at 50% 0%,
+    #000 15%,
+    transparent 75%
   );
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.6s linear infinite;
-}
-
-@keyframes skeleton-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 0%, #000 15%, transparent 75%);
 }
 
 @layer base {
@@ -186,15 +104,19 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--body);
+    color: var(--text-primary);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-ring);
+    outline: 2px solid var(--cyan);
     outline-offset: 2px;
+  }
+
+  [id] {
+    scroll-margin-top: 72px;
   }
 
   @media (prefers-reduced-motion: reduce) {

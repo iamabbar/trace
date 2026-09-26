@@ -1,4 +1,4 @@
-import type { ScoreBand } from '@/lib/scoring'
+import type { StatusTone } from '@/components/ui/statusMark'
 
 export type DeviceProfile = 'mobile' | 'desktop'
 
@@ -11,75 +11,74 @@ export type CategoryScore = {
   id: 'performance' | 'accessibility' | 'best-practices' | 'seo'
   label: string
   score: number
-  /** One-line summary of what is dragging the score, shown under the meter. */
   note: string
 }
 
 export type WebVital = {
-  code: 'LCP' | 'INP' | 'CLS'
-  name: string
+  key: 'LCP' | 'INP' | 'CLS'
+  full: string
   value: string
-  unit?: string
-  band: ScoreBand
-  /** Plain-language definition used by the tooltip. */
-  definition: string
-  explanation: string
-  /** Bar geometry as percentages of the full track. */
-  goodWidth: number
-  warnWidth: number
-  position: number
-  goodLabel: string
-  warnLabel: string
-  annotation: string
+  unit: string
+  tone: StatusTone
+  status: string
+  delta: string
+  description: string
+  /** Threshold geometry: bands are flex-weighted, marker is a percentage. */
+  goodFlex: number
+  warnFlex: number
+  poorFlex: number
+  markerPercent: number
+  label1: string
+  label1Percent: number
+  label2: string
+  label2Percent: number
 }
 
-export type TimingMetric = {
-  code: 'FCP' | 'LCP' | 'TBT' | 'SI'
-  name: string
+export type LabMetric = {
+  key: 'FCP' | 'LCP' | 'TBT' | 'SI'
+  full: string
   value: string
-  band: ScoreBand
   target: string
-  /** Fill and target-marker positions as percentages. */
+  tone: StatusTone
+  status: string
   fillPercent: number
-  targetPercent: number
+  tickPercent: number
 }
 
-export type IssueSeverity = 'high' | 'medium' | 'low'
+export type IssueSeverity = 'High' | 'Medium' | 'Low'
 
 export type Issue = {
   id: string
   title: string
-  /** The file or request the issue points at. */
-  target: string
-  description: string
   severity: IssueSeverity
+  icon: 'image' | 'slash' | 'code' | 'server'
+  file: string
+  description: string
   savings: string
-  icon: 'image' | 'code' | 'blocking' | 'server'
+  /** Anchor id of the matching recommendation, when there is one. */
+  recommendationId?: string
 }
 
 export type Recommendation = {
   id: string
   category: string
-  /** Estimated metric improvement, e.g. "LCP −1.1 s". */
-  gain: string
-  problem: string
+  title: string
+  savings: string
   why: string
   fix: string
-  snippet: string
+  code: string
 }
 
-export type ResourceKind = 'js' | 'css' | 'img' | 'font'
+export type ResourceType = 'JavaScript' | 'CSS' | 'Image' | 'Font'
 
 export type ResourceRow = {
   id: string
   name: string
   path: string
-  type: string
-  kind: ResourceKind
+  type: ResourceType
   size: string
-  /** Percentage of total page weight. */
   share: number
-  time: string
+  load: string
   status: 'Large' | 'Review' | 'OK'
 }
 
@@ -92,7 +91,7 @@ export type AnalysisReport = {
   verdict: { headline: string; detail: string }
   scores: CategoryScore[]
   vitals: WebVital[]
-  timings: TimingMetric[]
+  lab: LabMetric[]
   issues: Issue[]
   recommendations: Recommendation[]
   resources: ResourceRow[]

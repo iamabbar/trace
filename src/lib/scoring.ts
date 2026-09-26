@@ -1,4 +1,4 @@
-import type { StatusTone } from '@/components/ui/statusBadge'
+import type { StatusTone } from '@/components/ui/statusMark'
 
 export type ScoreBand = 'good' | 'warn' | 'poor'
 
@@ -20,10 +20,4 @@ export const BAND_TONES: Record<ScoreBand, StatusTone> = {
   good: 'good',
   warn: 'warn',
   poor: 'poor',
-}
-
-export const BAND_FILLS: Record<ScoreBand, string> = {
-  good: 'bg-good',
-  warn: 'bg-warn',
-  poor: 'bg-destructive',
 }
