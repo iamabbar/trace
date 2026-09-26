@@ -1,4 +1,5 @@
 import { Alert, AlertTitle } from '@/components/ui/alert'
+import { AnalysisErrorCard } from '@/features/analysis/components/analysisErrorCard'
 import { AnalysisProgress } from '@/features/analysis/components/analysisProgress'
 import { AnalyzeForm } from '@/features/analysis/components/analyzeForm'
 import { ReportSkeleton } from '@/features/analysis/components/reportSkeleton'
@@ -12,7 +13,8 @@ const CATEGORIES = [
 ]
 
 export function AnalyzerPage() {
-  const { status, request, steps, elapsedMs, progress, start, reset } = useAnalysis()
+  const { status, request, error, steps, elapsedMs, progress, start, retry, reset } =
+    useAnalysis()
 
   if (status !== 'idle' && request) {
     return (
@@ -47,6 +49,8 @@ export function AnalyzerPage() {
                 progress={progress}
                 onCancel={reset}
               />
+            ) : status === 'error' && error ? (
+              <AnalysisErrorCard error={error} onRetry={retry} onEdit={reset} />
             ) : (
               <Alert tone="good" className="w-full max-w-[560px]">
                 <span>
