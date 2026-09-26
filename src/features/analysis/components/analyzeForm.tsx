@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { LoaderCircle } from 'lucide-react'
+import { useState, type SubmitEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { SegmentedChoice } from '@/components/ui/segmentedChoice'
@@ -16,20 +17,31 @@ const EMPTY_MESSAGE = 'Enter the address of the page you want to analyze.'
 type AnalyzeFormProps = {
   onSubmit: (request: AnalysisRequest) => void
   pending?: boolean
+  /** `hero` is the landing layout; `compact` is the bar above a running or finished report. */
+  variant?: 'hero' | 'compact'
+  initialUrl?: string
+  initialDevice?: DeviceProfile
 }
 
-export function AnalyzeForm({ onSubmit, pending = false }: AnalyzeFormProps) {
-  const [value, setValue] = useState('')
-  const [device, setDevice] = useState<DeviceProfile>('mobile')
+export function AnalyzeForm({
+  onSubmit,
+  pending = false,
+  variant = 'hero',
+  initialUrl = '',
+  initialDevice = 'mobile',
+}: AnalyzeFormProps) {
+  const [value, setValue] = useState(initialUrl)
+  const [device, setDevice] = useState<DeviceProfile>(initialDevice)
   const [error, setError] = useState<string>()
   const [suggestion, setSuggestion] = useState<string>()
+  const isCompact = variant === 'compact'
 
   function clearError() {
     setError(undefined)
     setSuggestion(undefined)
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     const result = checkUrl(value)
 
@@ -54,7 +66,7 @@ export function AnalyzeForm({ onSubmit, pending = false }: AnalyzeFormProps) {
         <TextField
           label="Website URL"
           labelHidden
-          size="xl"
+          size={isCompact ? 'lg' : 'xl'}
           type="url"
           inputMode="url"
           autoComplete="url"
@@ -75,9 +87,19 @@ export function AnalyzeForm({ onSubmit, pending = false }: AnalyzeFormProps) {
           variant="primary"
           size="lg"
           disabled={pending}
-          className="h-14"
+          className={isCompact ? undefined : 'h-14'}
         >
-          {pending ? 'Analyzing…' : 'Analyze website'}
+          {pending ? (
+            <>
+              <LoaderCircle
+                className="size-4 animate-spin motion-reduce:animate-none"
+                strokeWidth={1.8}
+              />
+              Analyzing…
+            </>
+          ) : (
+            'Analyze website'
+          )}
         </Button>
       </div>
 
@@ -98,21 +120,23 @@ export function AnalyzeForm({ onSubmit, pending = false }: AnalyzeFormProps) {
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-muted-foreground flex items-center gap-2.5 text-[13px]">
-          <span>Test as</span>
-          <SegmentedChoice
-            legend="Device to test as"
-            name="device"
-            value={device}
-            options={DEVICE_OPTIONS}
-            onChange={setDevice}
-          />
+      {isCompact ? null : (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-muted-foreground flex items-center gap-2.5 text-[13px]">
+            <span>Test as</span>
+            <SegmentedChoice
+              legend="Device to test as"
+              name="device"
+              value={device}
+              options={DEVICE_OPTIONS}
+              onChange={setDevice}
+            />
+          </div>
+          <span className="text-muted-foreground text-[13px]">
+            Takes about 30 seconds · Public URLs only
+          </span>
         </div>
-        <span className="text-muted-foreground text-[13px]">
-          Takes about 30 seconds · Public URLs only
-        </span>
-      </div>
+      )}
     </form>
   )
 }

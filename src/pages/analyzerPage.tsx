@@ -1,24 +1,66 @@
-import { useState } from 'react'
-
 import { Alert, AlertTitle } from '@/components/ui/alert'
+import { AnalysisProgress } from '@/features/analysis/components/analysisProgress'
 import { AnalyzeForm } from '@/features/analysis/components/analyzeForm'
-import type { AnalysisRequest } from '@/features/analysis/types'
+import { ReportSkeleton } from '@/features/analysis/components/reportSkeleton'
+import { useAnalysis } from '@/features/analysis/useAnalysis'
 
 const CATEGORIES = [
-  {
-    name: 'Performance',
-    description: 'Core Web Vitals, load timings, heavy resources',
-  },
+  { name: 'Performance', description: 'Core Web Vitals, load timings, heavy resources' },
   { name: 'Accessibility', description: 'Contrast, labels, keyboard access' },
-  {
-    name: 'Best Practices',
-    description: 'HTTPS, console errors, deprecated APIs',
-  },
+  { name: 'Best Practices', description: 'HTTPS, console errors, deprecated APIs' },
   { name: 'SEO', description: 'Meta tags, crawlability, structured data' },
 ]
 
 export function AnalyzerPage() {
-  const [request, setRequest] = useState<AnalysisRequest>()
+  const { status, request, steps, elapsedMs, progress, start, reset } = useAnalysis()
+
+  if (status !== 'idle' && request) {
+    return (
+      <div className="flex flex-1 flex-col px-4 py-8 sm:px-6 lg:px-12">
+        <div className="mx-auto w-full max-w-[1248px]">
+          <AnalyzeForm
+            key={request.url}
+            variant="compact"
+            onSubmit={start}
+            pending={status === 'running'}
+            initialUrl={request.url}
+            initialDevice={request.device}
+          />
+        </div>
+
+        <div className="relative mt-8 flex-1">
+          <div className="mx-auto w-full max-w-[1248px]">
+            <ReportSkeleton />
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="from-background/20 to-background/95 absolute inset-0 bg-gradient-to-b from-0% to-40%"
+          />
+
+          <div className="absolute inset-x-0 top-6 flex justify-center sm:top-10">
+            {status === 'running' ? (
+              <AnalysisProgress
+                request={request}
+                steps={steps}
+                elapsedMs={elapsedMs}
+                progress={progress}
+                onCancel={reset}
+              />
+            ) : (
+              <Alert tone="good" className="w-full max-w-[560px]">
+                <span>
+                  <AlertTitle>Analysis complete.</AlertTitle> The report for{' '}
+                  <span className="font-mono">{request.url}</span> arrives in the next
+                  step. Edit the URL above to run another.
+                </span>
+              </Alert>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-1 flex-col items-center px-4 py-10 sm:px-6 sm:py-12">
@@ -35,18 +77,12 @@ export function AnalyzerPage() {
       </div>
 
       <div className="mt-14 w-full sm:mt-16">
-        <AnalyzeForm onSubmit={setRequest} />
+        <AnalyzeForm
+          onSubmit={start}
+          initialUrl={request?.url ?? ''}
+          initialDevice={request?.device}
+        />
       </div>
-
-      {request ? (
-        <Alert tone="info" className="mt-6 w-full">
-          <span>
-            <AlertTitle>Ready to analyze.</AlertTitle>{' '}
-            <span className="font-mono">{request.url}</span> on {request.device}. Running
-            the audit arrives in the next step.
-          </span>
-        </Alert>
-      ) : null}
 
       <ul className="border-border mt-auto grid w-full grid-cols-2 gap-x-5 gap-y-6 border-t pt-5 lg:grid-cols-4 lg:gap-x-0">
         {CATEGORIES.map((category, index) => (
