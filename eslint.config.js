@@ -23,8 +23,8 @@ export default defineConfig(
     },
   },
   {
-    // shadcn components ship their cva variants next to the component itself.
-    // Splitting them would break `shadcn add` updates, so the rule is off here.
+    // UI primitives export their cva variants and helpers next to the component.
+    // Splitting those out for fast-refresh alone would not be worth the churn.
     files: ['src/components/ui/**/*.tsx'],
     rules: { 'react-refresh/only-export-components': 'off' },
   },
