@@ -28,9 +28,3 @@ export function buildAnalysisError(host: string): AnalysisError {
     ],
   }
 }
-
-/* Until a backend exists, the hostname decides the outcome: any URL containing
-   "fail" errors, everything else succeeds. */
-export function shouldFail(url: string) {
-  return url.toLowerCase().includes('fail')
-}
