@@ -15,7 +15,7 @@ export type CategoryScore = {
 }
 
 export type WebVital = {
-  key: 'LCP' | 'INP' | 'CLS'
+  key: 'LCP' | 'TBT' | 'CLS'
   full: string
   value: string
   unit: string

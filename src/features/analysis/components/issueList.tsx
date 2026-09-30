@@ -65,9 +65,11 @@ export function IssueList({ issues }: { issues: Issue[] }) {
                     {issue.severity}
                   </StatusMark>
                 </span>
-                <code className="bg-tag rounded-chip max-w-full self-start overflow-hidden px-2 py-0.5 font-mono text-xs text-ellipsis whitespace-nowrap">
-                  {issue.file}
-                </code>
+                {issue.file ? (
+                  <code className="bg-tag rounded-chip max-w-full self-start overflow-hidden px-2 py-0.5 font-mono text-xs text-ellipsis whitespace-nowrap">
+                    {issue.file}
+                  </code>
+                ) : null}
                 <p className="text-secondary max-w-[640px] text-pretty">
                   {issue.description}
                 </p>
