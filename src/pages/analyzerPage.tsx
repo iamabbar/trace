@@ -71,6 +71,10 @@ export function AnalyzerPage() {
     )
   }
 
+  const isInProgress = status === 'running'
+  const isError = status === 'error'
+  const isComplete = status === 'complete'
+
   return (
     <AppShell onHome={reset}>
       <main
@@ -85,9 +89,9 @@ export function AnalyzerPage() {
             score, issue and table row — the moment it renders. Only the outcome
             is announced here; the progress card announces its own steps. */}
         <p role="status" aria-live="polite" className="sr-only">
-          {status === 'complete'
+          {isComplete
             ? 'Analysis complete. Report ready.'
-            : status === 'error'
+            : isError
               ? 'Analysis failed.'
               : ''}
         </p>
@@ -95,13 +99,13 @@ export function AnalyzerPage() {
           key={request?.url}
           variant="compact"
           onSubmit={start}
-          pending={status === 'running'}
+          pending={isInProgress}
           initialUrl={request?.url ?? ''}
           initialDevice={request?.device}
           inputRef={inputRef}
         />
 
-        {status === 'running' && request ? (
+        {isInProgress && request ? (
           <AnalysisProgress
             request={request}
             runNumber={15}
@@ -110,7 +114,7 @@ export function AnalyzerPage() {
           />
         ) : null}
 
-        {status === 'error' && error ? (
+        {isError && error ? (
           <AnalysisErrorView
             error={error}
             onRetry={retry}
@@ -120,7 +124,7 @@ export function AnalyzerPage() {
           />
         ) : null}
 
-        {status === 'complete' && report ? (
+        {isComplete && report ? (
           <ReportView report={report} onRerun={retry} />
         ) : null}
       </main>
