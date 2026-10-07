@@ -4,12 +4,13 @@ import type { WebVital } from '@/features/analysis/types'
 
 function ThresholdTrack({ vital }: { vital: WebVital }) {
   const marker = `${String(vital.markerPercent)}%`
+  const deltaLeft = `clamp(3rem, ${marker}, calc(100% - 3rem))`
 
   return (
     <div aria-hidden="true" className="relative h-16 self-center">
       <span
         className="absolute top-0 -translate-x-1/2 text-xs font-semibold whitespace-nowrap"
-        style={{ left: marker, color: toneColor(vital.tone) }}
+        style={{ left: deltaLeft, color: toneColor(vital.tone) }}
       >
         {vital.delta}
       </span>
