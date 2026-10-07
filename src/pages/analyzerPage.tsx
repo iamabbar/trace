@@ -124,9 +124,7 @@ export function AnalyzerPage() {
           />
         ) : null}
 
-        {isComplete && report ? (
-          <ReportView report={report} onRerun={retry} />
-        ) : null}
+        {isComplete && report ? <ReportView report={report} onRerun={retry} /> : null}
       </main>
     </AppShell>
   )

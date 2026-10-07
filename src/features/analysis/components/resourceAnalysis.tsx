@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 
+import { EmptyState } from '@/components/ui/emptyState'
 import { StatusMark, type StatusTone } from '@/components/ui/statusMark'
 import { tabPanelProps, UnderlineTabs } from '@/components/ui/underlineTabs'
 import { LedgerSection } from '@/features/analysis/components/ledgerSection'
@@ -80,80 +81,90 @@ export function ResourceAnalysis({
         }))}
       />
 
-      <div {...tabPanelProps(tabsId, filter)} className="mt-2 overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-[13px]">
-          <thead>
-            <tr className="text-tertiary text-left text-xs">
-              <th scope="col" className="py-2.5 font-semibold">
-                Resource
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-semibold">
-                Type
-              </th>
-              <th scope="col" className="px-3 py-2.5 text-right font-semibold">
-                Size
-              </th>
-              <th scope="col" className="w-[26%] px-3 py-2.5 font-semibold">
-                Share of page weight
-              </th>
-              <th scope="col" className="px-3 py-2.5 text-right font-semibold">
-                Load
-              </th>
-              <th scope="col" className="py-2.5 pl-3 font-semibold">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((row) => (
-              <tr key={row.id} className="hairline-faint hover:bg-tag border-t">
-                <th scope="row" className="py-3 text-left font-normal">
-                  <span className="block font-mono text-[13px] font-semibold">
-                    {row.name}
-                  </span>
-                  <span className="text-tertiary block font-mono text-[11px]">
-                    {row.path}
-                  </span>
+      {visible.length === 0 ? (
+        <EmptyState
+          message={
+            resources.length === 0
+              ? 'No resources captured for this run.'
+              : `No ${filter.toLowerCase()} resources.`
+          }
+        />
+      ) : (
+        <div {...tabPanelProps(tabsId, filter)} className="mt-2 overflow-x-auto">
+          <table className="w-full min-w-[640px] border-collapse text-[13px]">
+            <thead>
+              <tr className="text-tertiary text-left text-xs">
+                <th scope="col" className="py-2.5 font-semibold">
+                  Resource
                 </th>
-                <td className="text-secondary px-3 py-3 whitespace-nowrap">
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      aria-hidden="true"
-                      className="size-[7px] rounded-[2px]"
-                      style={{ background: TYPE_DOTS[row.type] }}
-                    />
-                    {row.type}
-                  </span>
-                </td>
-                <td className="px-3 py-3 text-right font-bold whitespace-nowrap tabular-nums">
-                  {row.size}
-                </td>
-                <td className="px-3 py-3">
-                  <span className="flex items-center gap-2.5">
-                    <span className="bg-tag-hover relative h-[3px] flex-1 rounded-[2px]">
-                      <span
-                        className="bg-secondary absolute inset-y-0 left-0 rounded-[2px]"
-                        style={{ width: `${String(row.share)}%` }}
-                      />
-                    </span>
-                    <span className="text-secondary w-9 text-right text-xs tabular-nums">
-                      {row.share}%
-                    </span>
-                  </span>
-                </td>
-                <td className="text-secondary px-3 py-3 text-right whitespace-nowrap tabular-nums">
-                  {row.load}
-                </td>
-                <td className="py-3 pl-3">
-                  <StatusMark tone={STATUS_TONES[row.status]} size={7}>
-                    {row.status}
-                  </StatusMark>
-                </td>
+                <th scope="col" className="px-3 py-2.5 font-semibold">
+                  Type
+                </th>
+                <th scope="col" className="px-3 py-2.5 text-right font-semibold">
+                  Size
+                </th>
+                <th scope="col" className="w-[26%] px-3 py-2.5 font-semibold">
+                  Share of page weight
+                </th>
+                <th scope="col" className="px-3 py-2.5 text-right font-semibold">
+                  Load
+                </th>
+                <th scope="col" className="py-2.5 pl-3 font-semibold">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {visible.map((row) => (
+                <tr key={row.id} className="hairline-faint hover:bg-tag border-t">
+                  <th scope="row" className="py-3 text-left font-normal">
+                    <span className="block font-mono text-[13px] font-semibold">
+                      {row.name}
+                    </span>
+                    <span className="text-tertiary block font-mono text-[11px]">
+                      {row.path}
+                    </span>
+                  </th>
+                  <td className="text-secondary px-3 py-3 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="size-[7px] rounded-[2px]"
+                        style={{ background: TYPE_DOTS[row.type] }}
+                      />
+                      {row.type}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-right font-bold whitespace-nowrap tabular-nums">
+                    {row.size}
+                  </td>
+                  <td className="px-3 py-3">
+                    <span className="flex items-center gap-2.5">
+                      <span className="bg-tag-hover relative h-[3px] flex-1 rounded-[2px]">
+                        <span
+                          className="bg-secondary absolute inset-y-0 left-0 rounded-[2px]"
+                          style={{ width: `${String(row.share)}%` }}
+                        />
+                      </span>
+                      <span className="text-secondary w-9 text-right text-xs tabular-nums">
+                        {row.share}%
+                      </span>
+                    </span>
+                  </td>
+                  <td className="text-secondary px-3 py-3 text-right whitespace-nowrap tabular-nums">
+                    {row.load}
+                  </td>
+                  <td className="py-3 pl-3">
+                    <StatusMark tone={STATUS_TONES[row.status]} size={7}>
+                      {row.status}
+                    </StatusMark>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <p className="hairline-faint text-tertiary border-t pt-3.5 text-xs">
         Showing {visible.length} of {resources.length} resources · third-party requests
