@@ -17,8 +17,11 @@ export type StepProgress = {
   state: StepState
 }
 
-export function describeSteps(elapsedMs: number): StepProgress[] {
-  const current = Math.floor(elapsedMs / STEP_DURATION_MS)
+export function describeSteps(elapsedMs: number, stillRunning: boolean): StepProgress[] {
+  const rawCurrent = Math.floor(elapsedMs / STEP_DURATION_MS)
+  const current = stillRunning
+    ? Math.min(rawCurrent, ANALYSIS_STEPS.length - 1)
+    : rawCurrent
 
   return ANALYSIS_STEPS.map((label, index) => ({
     label,
