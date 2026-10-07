@@ -1,7 +1,7 @@
 ---
 name: responsive-check
 description: Visually verify the app's responsive reflow and light/dark theming at the three design breakpoints (390/834/1440px) via live browser screenshots. Use when asked to check responsiveness, verify a breakpoint, or audit layout/theme across screen sizes.
-argument-hint: "[state: idle|loading|report|error] [width]"
+argument-hint: '[state: idle|loading|report|error] [width]'
 ---
 
 Visual verification was flagged in `.claude/docs/PLAN.md` as never actually having been done
@@ -30,6 +30,9 @@ three widths × both themes × every reachable state.
   - **error** — reachable on demand by submitting a URL while the backend is down/unreachable, or an invalid URL for the client-side validation error.
 - Note which states you could and couldn't reach in the final report — don't fabricate a
   report screenshot if the backend never responded.
+- **Capability probe:** `resize_window` once to the first target width, check
+  `window.innerWidth` matches. If not, the sandbox can't resize — don't retry,
+  ask the user once how to proceed (fixed-width test / static audit / fix tooling).
 
 ## 2. For each width × theme combination
 
@@ -46,12 +49,12 @@ three widths × both themes × every reachable state.
 
 ## 3. Check against the documented reflow rules
 
-From `.claude/docs/PLAN.md` Phase 8 — confirm these actually happen rather than assuming they do:
+From `.claude/docs/PLAN.md` Phase 8 — confirm these rather than assuming them. Known from
+code already (don't re-derive, just confirm visually when possible):
 
-- Score grid: 4-column at 1440px → 2-column at ≤834px.
-- Core Web Vitals cards stack vertically below desktop width.
-- Issues list becomes cards (not a table) below tablet width.
-- Resource table becomes stacked card rows below tablet width.
+- Score grid / Core Web Vitals reflow — _(fluid auto-fit grid, not breakpoints — likely fine)_
+- Resource table → cards — _(confirmed absent, still a `<table>`)_
+- Issues → cards — _(moot, never a table)_
 - Header collapses/condenses at mobile width.
 - Any tab/segmented-control strip scrolls horizontally rather than wrapping or overflowing the page.
 - No page-level horizontal scroll at 390px.
